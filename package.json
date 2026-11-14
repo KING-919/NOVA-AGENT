@@ -1,0 +1,61 @@
+{
+  "name": "nova-agent-desktop",
+  "version": "2.1.1",
+  "private": true,
+  "author": "NOVA Agent Contributors",
+  "description": "NOVA Agent — Arabic desktop coding agent with local and cloud model providers",
+  "main": "desktop/main.cjs",
+  "scripts": {
+    "prestart": "node scripts/ensure-deps.js",
+    "start": "node server.js",
+    "dev": "node server.js",
+    "desktop": "electron .",
+    "dist:win": "electron-builder --win nsis",
+    "dist:dir": "electron-builder --dir"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "electron": "^45.3.2",
+    "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "com.nova.agent",
+    "productName": "NOVA Agent",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "desktop/**/*",
+      "server.js",
+      "lib/**/*",
+      "public/**/*",
+      "package.json",
+      "!**/data/**",
+      "!**/workspace/**"
+    ],
+    "asar": true,
+    "win": {
+      "icon": "public/assets/nova.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "artifactName": "NOVA-Setup-win-${arch}.${ext}",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}
