@@ -66,6 +66,10 @@ npm run dist:win
 
 ## موقع التنزيل وGitHub Pages
 
+
+
+الموقع الرسمي: https://nova-agent1.netlify.app 
+
 المستودع الرسمي: [KING-919/NOVA-AGENT](https://github.com/KING-919/NOVA-AGENT). إعداد المالك والاسم موجود في `download-site/site-config.js`.
 
 تم تفعيل GitHub Pages للنشر من GitHub Actions. ينشر `.github/workflows/pages.yml` مجلد `download-site/` عند تحديثه على الفرع `main`. لإنشاء إصدار Windows لاحقًا، ادفع tag يبدأ بـ `v`، مثل `git tag v2.1.4; git push origin v2.1.4`؛ تبني GitHub Actions المُثبّت وتضيفه إلى صفحة Releases.
