@@ -417,7 +417,8 @@ app.get('/api/health', (req, res) => {
 // Boot
 // ------------------------------------------------------------------
 function start(port, attempt = 0) {
-  const server = app.listen(port, '127.0.0.1');
+  const host = process.env.HOST || '127.0.0.1';
+  const server = app.listen(port, host);
 
   server.on('listening', () => {
     const activePort = server.address().port;
