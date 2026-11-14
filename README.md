@@ -5,7 +5,7 @@
   <p><a href="#quick-start">Quick start</a> · <a href="https://king-919.github.io/NOVA-AGENT-Website/">Download</a> · <a href="#architecture">Architecture</a> · <a href="#البدء-السريع">العربية</a></p>
 
   <p>
-    <a href="https://github.com/KING-919/NOVA-AGENT/actions/workflows/pages.yml"><img alt="Download site" src="https://github.com/KING-919/NOVA-AGENT/actions/workflows/pages.yml/badge.svg"></a>
+    <a href="https://github.com/KING-919/NOVA-AGENT-Website/actions/workflows/pages.yml"><img alt="Download site" src="https://github.com/KING-919/NOVA-AGENT-Website/actions/workflows/pages.yml/badge.svg"></a>
     <a href="https://github.com/KING-919/NOVA-AGENT/actions/workflows/release.yml"><img alt="Windows release build" src="https://github.com/KING-919/NOVA-AGENT/actions/workflows/release.yml/badge.svg"></a>
     <a href="https://github.com/KING-919/NOVA-AGENT/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/KING-919/NOVA-AGENT?display_name=tag"></a>
     <a href="https://github.com/KING-919/NOVA-AGENT/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/KING-919/NOVA-AGENT?style=flat"></a>
