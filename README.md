@@ -2,7 +2,7 @@
   <img src="docs/assets/nova-banner.svg" alt="NOVA Agent — a local-first AI coding workspace" width="100%" />
 
   <p><strong>A local-first AI workspace for building with the models and APIs you choose.</strong></p>
-  <p><a href="#quick-start">Quick start</a> · <a href="https://king-919.github.io/NOVA-AGENT/">Download</a> · <a href="#architecture">Architecture</a> · <a href="#البدء-السريع">العربية</a></p>
+  <p><a href="#quick-start">Quick start</a> · <a href="https://king-919.github.io/NOVA-AGENT-Website/">Download</a> · <a href="#architecture">Architecture</a> · <a href="#البدء-السريع">العربية</a></p>
 
   <p>
     <a href="https://github.com/KING-919/NOVA-AGENT/actions/workflows/pages.yml"><img alt="Download site" src="https://github.com/KING-919/NOVA-AGENT/actions/workflows/pages.yml/badge.svg"></a>
@@ -30,7 +30,7 @@ NOVA Agent is an Arabic-first desktop coding assistant for Windows. It brings ch
 
 ### Windows desktop
 
-1. [Download the latest NOVA installer](https://king-919.github.io/NOVA-AGENT/) and install it.
+1. [Download the latest NOVA installer](https://king-919.github.io/NOVA-AGENT-Website/) and install it.
 2. Open **Settings → AI provider** and choose a local model or enter your API provider, model ID, and API key.
 3. Select a workspace, start a chat, and begin in **Ask** or **Plan** mode. Review each requested edit or command before approving it.
 
@@ -95,7 +95,7 @@ Bug reports and pull requests are welcome. Please read [CONTRIBUTING.md](CONTRIB
 
 NOVA can read and write files and run commands inside the selected workspace. Start in **Ask** or **Plan** mode and inspect approval requests. Enabling access outside the workspace or automatic command execution broadens what the agent can do. When you use a hosted provider, prompts and the project context sent by NOVA are subject to that provider's policies.
 
-Official website: [nova-agent1.netlify.app](https://nova-agent1.netlify.app) · [GitHub Pages download site](https://king-919.github.io/NOVA-AGENT/).
+Official website: [nova-agent1.netlify.app](https://nova-agent1.netlify.app) · [GitHub Pages downloads](https://king-919.github.io/NOVA-AGENT-Website/) · [Website source repository](https://github.com/KING-919/NOVA-AGENT-Website).
 
 ## License
 
@@ -152,3 +152,5 @@ docker compose up --build
 يستطيع NOVA قراءة ملفات مساحة العمل وتعديلها وتشغيل أوامر فيها. ابدأ بوضع **اسأل** أو **خطّط** وراجع طلبات الموافقة. تفعيل الوصول خارج مساحة العمل أو التشغيل التلقائي يوسّع صلاحيات الوكيل. عند استخدام مزوّد سحابي، تخضع الرسائل وسياق المشروع المرسل لسياسة ذلك المزوّد.
 
 للمساهمة راجع [CONTRIBUTING.md](CONTRIBUTING.md)، وللإبلاغ عن مشكلة أمنية راجع [SECURITY.md](SECURITY.md). لم يُحدد ترخيص للمشروع بعد؛ ظهور المستودع للعامة لا يمنح تلقائيًا حق إعادة استخدام الكود أو توزيعه.
+
+موقع التنزيل: [nova-agent1.netlify.app](https://nova-agent1.netlify.app) · [نسخة GitHub Pages](https://king-919.github.io/NOVA-AGENT-Website/) · [مستودع الموقع](https://github.com/KING-919/NOVA-AGENT-Website).
