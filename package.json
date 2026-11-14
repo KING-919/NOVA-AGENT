@@ -1,6 +1,6 @@
 {
   "name": "nova-agent-desktop",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "private": true,
   "author": "NOVA Agent Contributors",
   "description": "NOVA Agent — Arabic desktop coding agent with local and cloud model providers",
@@ -10,7 +10,7 @@
     "start": "node server.js",
     "dev": "node server.js",
     "desktop": "electron .",
-    "dist:win": "electron-builder --win nsis",
+    "dist:win": "electron-builder --win nsis --publish never",
     "dist:dir": "electron-builder --dir"
   },
   "engines": {
