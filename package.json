@@ -1,6 +1,6 @@
 {
   "name": "nova-agent-desktop",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "private": true,
   "author": "NOVA Agent Contributors",
   "description": "NOVA Agent — Arabic desktop coding agent with local and cloud model providers",

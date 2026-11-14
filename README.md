@@ -62,13 +62,13 @@ npm run dist:win
 
 لا يتضمن البناء الحالي شهادة توقيع ناشر. قد يعرض Windows تنبيهًا عند تشغيل ملف التنصيب؛ أضف شهادة توقيع عبر إعدادات Electron Builder قبل التوزيع العام لتظهر هوية الناشر.
 
-يُبنى الملف محليًا على Windows، أو تلقائيًا في GitHub Actions عند دفع tag يبدأ بـ `v`، مثل `v2.1.1`. ترفع workflow ملفات EXE إلى GitHub Release. راجع `.github/workflows/release.yml`.
+يُبنى الملف محليًا على Windows، أو تلقائيًا في GitHub Actions عند دفع tag يبدأ بـ `v`، مثل `v2.1.2`. ترفع workflow ملف EXE إلى GitHub Release. راجع `.github/workflows/release.yml`.
 
 ## موقع التنزيل وGitHub Pages
 
 المستودع الرسمي: [KING-919/NOVA-AGENT](https://github.com/KING-919/NOVA-AGENT). إعداد المالك والاسم موجود في `download-site/site-config.js`.
 
-فعّل **Settings → Pages → Build and deployment → Source: GitHub Actions** لنشر صفحة التنزيل على GitHub Pages. ينشر `.github/workflows/pages.yml` مجلد `download-site/` عند تحديثه على الفرع `main`. لإنشاء إصدار Windows لاحقًا، ادفع tag يبدأ بـ `v`، مثل `git tag v2.1.2; git push origin v2.1.2`؛ تبني GitHub Actions المُثبّت وتضيفه إلى صفحة Releases.
+تم تفعيل GitHub Pages للنشر من GitHub Actions. ينشر `.github/workflows/pages.yml` مجلد `download-site/` عند تحديثه على الفرع `main`. لإنشاء إصدار Windows لاحقًا، ادفع tag يبدأ بـ `v`، مثل `git tag v2.1.3; git push origin v2.1.3`؛ تبني GitHub Actions المُثبّت وتضيفه إلى صفحة Releases.
 
 توجه أزرار الصفحة إلى أحدث GitHub Release لتنزيل المُثبّت. إذا غيرت اسم ملفات البناء أو المستودع، حدّث الروابط في `download-site/index.html` و`site-config.js`.
 
