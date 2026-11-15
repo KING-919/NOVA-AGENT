@@ -56,6 +56,31 @@ const state = {
 
 let sessionsTimer = null;
 
+function looksLikeUrl(value) {
+  return /^https?:\/\//i.test(String(value || '').trim());
+}
+
+// Chrome can autofill a saved URL into the session search box, hiding every
+// conversation behind a query that was never typed. Treat URL-like values as
+// autofill noise and clear them.
+function sessionQuery() {
+  const input = $('#session-search');
+  if (!input) return '';
+  const raw = String(input.value || '').trim();
+  if (looksLikeUrl(raw)) {
+    input.value = '';
+    return '';
+  }
+  return raw.toLowerCase();
+}
+
+function clearAutofilledSearch() {
+  const input = $('#session-search');
+  if (!input || !looksLikeUrl(input.value)) return;
+  input.value = '';
+  renderSessions();
+}
+
 async function init() {
   applyTheme(state.theme);
   bindShellEvents();
@@ -66,6 +91,18 @@ async function init() {
   updateHeader();
   updateSendButton();
 
+  const searchInput = $('#session-search');
+  if (searchInput) {
+    const unlockSearch = () => searchInput.removeAttribute('readonly');
+    searchInput.addEventListener('focus', unlockSearch);
+    searchInput.addEventListener('pointerdown', unlockSearch);
+    searchInput.addEventListener('keydown', unlockSearch);
+    searchInput.value = '';
+    searchInput.addEventListener('focus', clearAutofilledSearch);
+    searchInput.addEventListener('pointerdown', clearAutofilledSearch);
+  }
+  [400, 1200, 2600, 5000].forEach((delay) => setTimeout(clearAutofilledSearch, delay));
+
   await Promise.allSettled([loadConfig(), loadModels(), loadSessions()]);
 
   if (!state.session) renderWelcome();
@@ -74,7 +111,12 @@ async function init() {
   updateWorkspaceUI();
   updateHeader();
   setStatus('جاهز', 'idle');
-  scrollToBottom(true);
+  if (state.session) {
+    scrollToBottom(true);
+  } else {
+    const scroller = $('#chat-scroll');
+    if (scroller) scroller.scrollTop = 0;
+  }
 }
 
 /* ---------------- Data loading ---------------- */
@@ -134,27 +176,41 @@ function renderSessions() {
   const wrap = $('#sessions');
   if (!wrap) return;
 
-  const query = ($('#session-search')?.value || '').trim().toLowerCase();
+  const query = sessionQuery();
   const sessions = state.sessions.filter((session) => !query || String(session.title || '').toLowerCase().includes(query));
+
+  const count = $('#sessions-count');
+  if (count) count.textContent = String(state.sessions.length);
 
   if (!sessions.length) {
     wrap.innerHTML = query
       ? '<div class="sessions-empty">ما لقينا محادثة بهذا الاسم.</div>'
-      : '<div class="sessions-empty">لا توجد محادثات بعد.<br>ابدأ بسؤال أو مهمة.</div>';
+      : '<div class="sessions-empty"><span class="sessions-empty-glyph">◌</span>لا توجد محادثات بعد.<br>ابدأ بسؤال أو مهمة.</div>';
     return;
   }
 
-  wrap.innerHTML = sessions.map((session) => {
-    const active = state.session && state.session.id === session.id ? ' active' : '';
-    return `<div class="session-item${active}" data-id="${escapeHtml(session.id)}" tabindex="0" role="button">
-      <span class="session-ico">${ICONS.message}</span>
-      <span class="session-main">
-        <span class="session-title">${escapeHtml(session.title || 'جلسة جديدة')}</span>
-        <span class="session-time">${escapeHtml(relTime(session.updatedAt))}</span>
-      </span>
-      <button class="session-del" data-del="${escapeHtml(session.id)}" title="حذف المحادثة" aria-label="حذف المحادثة">${ICONS.trash}</button>
-    </div>`;
-  }).join('');
+  const groups = new Map();
+  sessions.forEach((session) => {
+    const key = sessionGroup(session.updatedAt);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(session);
+  });
+
+  wrap.innerHTML = Array.from(groups.entries()).map(([label, items]) => `
+    <div class="session-group">
+      <div class="session-group-label"><span>${escapeHtml(label)}</span><span class="session-group-count">${items.length}</span></div>
+      ${items.map((session) => {
+        const active = state.session && state.session.id === session.id ? ' active' : '';
+        return `<div class="session-item${active}" data-id="${escapeHtml(session.id)}" tabindex="0" role="button" title="${escapeHtml(session.title || 'جلسة جديدة')}">
+          <span class="session-ico">${ICONS.message}</span>
+          <span class="session-main">
+            <span class="session-title">${escapeHtml(session.title || 'جلسة جديدة')}</span>
+            <span class="session-time">${escapeHtml(relTime(session.updatedAt))}</span>
+          </span>
+          <button class="session-del" data-del="${escapeHtml(session.id)}" title="حذف المحادثة" aria-label="حذف المحادثة">${ICONS.trash}</button>
+        </div>`;
+      }).join('')}
+    </div>`).join('');
 }
 
 /* ---------------- Welcome ---------------- */
@@ -162,12 +218,21 @@ function renderWelcome() {
   const chat = $('#chat');
   if (!chat) return;
 
+  clearPlan();
   chat.innerHTML = `<div class="welcome">
-    <div class="welcome-orb">${LOGO}</div>
-    <div class="welcome-kicker">LOCAL AGENT · BIONIC × LM STUDIO</div>
-    <h1>${escapeHtml(greeting())}، ماذا نبني اليوم؟</h1>
-    <p>أنا NOVA — وكيلك المحلي. أقرأ ملفاتك، أكتب الكود، أنفّذ المهام على جهازك، وأسألك عند الغموض. كل شيء يبقى على جهازك.</p>
+    <div class="welcome-hero">
+      <div class="welcome-orb-wrap"><div class="welcome-orb">${LOGO}</div></div>
+      <div class="welcome-kicker"><span class="kicker-dot"></span>${escapeHtml(greeting())} · NOVA</div>
+      <h1>ماذا نبني <em>اليوم؟</em></h1>
+      <p>وكيلك البرمجي على جهازك. يقرأ مشروعك، يخطّط معك، ويعدّل الملفات وينفّذ الأوامر — وأنت توافق على كل خطوة.</p>
+      <div class="welcome-badges">
+        <span>${ICONS.spark} عربي أولًا</span>
+        <span>${ICONS.shield} محلي أولًا</span>
+        <span>${ICONS.check} موافقة قبل التنفيذ</span>
+      </div>
+    </div>
     <div id="welcome-alert"></div>
+    <div class="suggestions-head"><span>ابدأ بسرعة</span></div>
     <div class="suggestions">
       ${SUGGESTIONS.map((item, index) => `<button type="button" class="suggestion" data-suggestion="${index}">
         <span class="suggestion-ico">${ICONS[item.icon] || ICONS.spark}</span>
@@ -181,6 +246,8 @@ function renderWelcome() {
     <div class="welcome-connect" id="welcome-connect"></div>
   </div>`;
 
+  const jump = $('#jump-bottom');
+  if (jump) jump.hidden = true;
   updateWelcomeState();
 }
 
@@ -188,9 +255,11 @@ function updateWelcomeState() {
   const connect = $('#welcome-connect');
   if (!connect) return;
 
+  connect.hidden = !state.connected;
+
   const dotClass = state.connected ? 'online' : 'offline';
   const modelText = state.connected
-    ? (state.models.length ? `${state.models.length} نموذج متاح` : 'لا توجد نماذج')
+    ? (state.models.length ? modelsPhrase(state.models.length, 'جاهز') : 'لا توجد نماذج بعد')
     : 'غير متصل';
 
   const providerName = providerLabel();
@@ -202,11 +271,34 @@ function updateWelcomeState() {
   if (!alert) return;
 
   if (!state.connected) {
-    alert.innerHTML = `<div class="connect-alert">${ICONS.alert}<div><b>لم أجد مزوّد API.</b> تحقق من تشغيل الخدمة وعنوان API ومفتاحها في الإعدادات.
-      <div style="margin-top:6px"><button type="button" class="link-btn" data-welcome="retry">إعادة المحاولة</button> · <button type="button" class="link-btn" data-welcome="settings">فتح الإعدادات</button></div></div></div>`;
+    alert.innerHTML = `<div class="setup-card">
+      <span class="setup-icon">${ICONS.spark}</span>
+      <div class="setup-body">
+        <b>وصّل مزوّدك وابدأ في دقيقة</b>
+        <p>لا اشتراك إجباري ولا حساب. شغّل نموذجًا محليًا مثل LM Studio أو Ollama، أو استخدم أي API متوافق مع OpenAI.</p>
+        <div class="setup-steps">
+          <span><i>1</i> اختر المزوّد</span>
+          <span><i>2</i> أضف العنوان والمفتاح</span>
+          <span><i>3</i> اختبر الاتصال</span>
+        </div>
+        <div class="setup-actions">
+          <button type="button" class="btn primary small" data-welcome="settings">فتح الإعدادات</button>
+          <button type="button" class="btn ghost small" data-welcome="retry">اختبار سريع</button>
+        </div>
+      </div>
+    </div>`;
   } else if (!state.models.length) {
-    alert.innerHTML = `<div class="connect-alert">${ICONS.alert}<div><b>الخدمة متصلة لكن لا توجد نماذج.</b> تحقق أن مزوّد API يعرض نماذج متاحة، ثم أعد المحاولة.
-      <div style="margin-top:6px"><button type="button" class="link-btn" data-welcome="retry">إعادة المحاولة</button></div></div></div>`;
+    alert.innerHTML = `<div class="setup-card compact">
+      <span class="setup-icon">${ICONS.alert}</span>
+      <div class="setup-body">
+        <b>الخدمة متصلة لكن لا توجد نماذج.</b>
+        <p>تأكد أن المزوّد يعرض نماذج متاحة في حسابه أو أنك حمّلت نموذجًا محليًا، ثم أعد المحاولة.</p>
+        <div class="setup-actions">
+          <button type="button" class="btn ghost small" data-welcome="retry">إعادة المحاولة</button>
+          <button type="button" class="btn ghost small" data-welcome="settings">فتح الإعدادات</button>
+        </div>
+      </div>
+    </div>`;
   } else {
     alert.innerHTML = '';
   }
@@ -216,7 +308,7 @@ async function retryConnection() {
   await loadModels();
   updateWelcomeState();
   if (state.connected) {
-    toast(`تم الاتصال — ${state.models.length} نموذج متاح.`, 'success');
+    toast(`تم الاتصال — ${modelsPhrase(state.models.length, 'متاح')}.`, 'success');
   } else {
     toast('لم يتم العثور على مزوّد API بعد.', 'error');
   }
@@ -284,7 +376,7 @@ function updateModelUI() {
   if (popBase) popBase.textContent = state.baseUrl ? state.baseUrl.replace(/^https?:\/\//, '') : providerLabel();
 
   const count = $('#model-count');
-  if (count) count.textContent = state.models.length ? `${state.models.length} نموذج` : '';
+  if (count) count.textContent = state.models.length ? modelsShort(state.models.length) : '';
 
   if ($('#model-popover') && !$('#model-popover').hidden) renderModelList();
 }
@@ -345,9 +437,10 @@ function updateConnectionUI() {
   if (dot) dot.className = 'status-dot ' + (state.connected ? 'online' : 'offline');
   if (text) {
     text.textContent = state.connected
-      ? (state.models.length ? `متصل · ${state.models.length} نموذج` : 'متصل · لا نماذج')
+      ? (state.models.length ? `${providerLabel()} · ${modelsShort(state.models.length)}` : `${providerLabel()} · لا نماذج`)
       : 'غير متصل بمزوّد API';
   }
+  document.body.classList.toggle('is-connected', !!state.connected);
   const popBase = $('#pop-base');
   if (popBase) popBase.textContent = state.baseUrl ? state.baseUrl.replace(/^https?:\/\//, '') : providerLabel();
 }
@@ -358,6 +451,8 @@ function updateWorkspaceUI() {
   if (pathEl) pathEl.textContent = workspace || '—';
   const wsLabel = $('#ws-label');
   if (wsLabel) wsLabel.textContent = workspace ? basename(workspace) : 'workspace';
+  const topWs = $('#top-workspace');
+  if (topWs) topWs.textContent = workspace ? basename(workspace) : 'workspace';
 }
 
 async function setModel(id) {
@@ -538,9 +633,11 @@ function bindShellEvents() {
     toast('تم تحديث المحادثات.', 'info', 1800);
   });
 
-  $('#workspace-card').addEventListener('click', openSettings);
-  $('#settings-btn').addEventListener('click', openSettings);
-  $('#settings-btn-2').addEventListener('click', openSettings);
+  $('#workspace-card').addEventListener('click', () => openSettings('workspace'));
+  $('#settings-btn').addEventListener('click', () => openSettings('connection'));
+  $('#settings-btn-2').addEventListener('click', () => openSettings('connection'));
+  const connSettings = $('#conn-settings');
+  if (connSettings) connSettings.addEventListener('click', () => openSettings('connection'));
 
   $('#theme-btn').addEventListener('click', () => {
     const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';

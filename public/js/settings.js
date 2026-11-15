@@ -70,6 +70,52 @@ async function setMode(mode) {
 
 /* ---------------- Settings modal ---------------- */
 
+const PROVIDER_LABELS = {
+  lmstudio: 'LM Studio',
+  freellmapi: 'FreeLLMAPI',
+  openai: 'OpenAI',
+  openrouter: 'OpenRouter',
+  groq: 'Groq',
+  gemini: 'Google Gemini',
+  ollama: 'Ollama',
+  'openai-compatible': 'OpenAI-compatible'
+};
+
+function setSettingsTab(name = 'connection') {
+  const tab = typeof name === 'string' ? name : 'connection';
+  $$('.settings-tab').forEach((button) => {
+    const active = button.dataset.settingsTab === tab;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-selected', String(active));
+  });
+  $$('[data-settings-panel]').forEach((panel) => {
+    panel.hidden = panel.dataset.settingsPanel !== tab;
+  });
+}
+
+function updateSettingsSummary() {
+  const provider = $('#set-provider');
+  const providerName = PROVIDER_LABELS[(provider && provider.value) || (state.config && state.config.provider)] || 'مزوّد مخصص';
+  const label = $('#settings-provider-name');
+  if (label) label.textContent = providerName;
+
+  const dot = $('#settings-status-dot');
+  if (dot) dot.className = 'status-dot ' + (state.connected ? 'online' : 'offline');
+
+  const title = $('#settings-status-text');
+  const meta = $('#settings-status-meta');
+  if (title) {
+    title.textContent = state.connected
+      ? (state.models.length ? 'متصل وجاهز للعمل' : 'متصل، لكن لا توجد نماذج')
+      : 'غير متصل بمزوّد';
+  }
+  if (meta) {
+    meta.textContent = state.connected
+      ? `${modelsPhrase(state.models.length, 'متاح')} · ${providerName}`
+      : 'شغّل نموذجًا محليًا أو أضف عنوان API ومفتاحًا ثم اختبر الاتصال';
+  }
+}
+
 function fillSettingsForm() {
   const config = state.config || {};
 
@@ -83,9 +129,16 @@ function fillSettingsForm() {
   const key = $('#set-key');
   if (key) {
     key.value = '';
+    key.type = 'password';
     key.placeholder = config.hasKey
       ? 'مفتاح محفوظ — اكتب مفتاحًا جديدًا للتغيير'
       : 'اتركه فارغًا إن لم تستخدم مفتاحًا';
+  }
+  const keyToggle = $('#toggle-key');
+  if (keyToggle) {
+    keyToggle.classList.remove('active');
+    keyToggle.title = 'إظهار المفتاح';
+    keyToggle.setAttribute('aria-label', 'إظهار مفتاح API');
   }
 
   const workspace = $('#set-workspace');
@@ -116,10 +169,11 @@ function fillSettingsForm() {
   }
 
   state.keyCleared = false;
+  updateSettingsSummary();
   updateModeUI();
 }
 
-async function openSettings() {
+async function openSettings(tab = 'connection') {
   try {
     state.config = await api('GET', '/api/config');
   } catch {
@@ -130,11 +184,12 @@ async function openSettings() {
 
   const modal = $('#settings-modal');
   if (!modal) return;
+  setSettingsTab(tab);
   modal.hidden = false;
 
   setTimeout(() => {
-    const base = $('#set-base');
-    if (base) base.focus();
+    const target = tab === 'connection' ? $('#set-base') : null;
+    if (target) target.focus();
   }, 60);
 }
 
@@ -216,11 +271,21 @@ async function testConnection() {
       const count = Number(data.count) || 0;
       result.classList.add('ok');
       result.textContent = count
-        ? `متصل — ${count} نموذج متاح.`
+        ? `متصل — ${modelsPhrase(count, 'متاح')}.`
         : 'متصل، لكن لا توجد نماذج محمّلة.';
+      const dot = $('#settings-status-dot');
+      if (dot) dot.className = 'status-dot online';
+      const title = $('#settings-status-text');
+      if (title) title.textContent = count ? 'متصل وجاهز للعمل' : 'متصل، لكن لا توجد نماذج';
+      const meta = $('#settings-status-meta');
+      if (meta) meta.textContent = count ? `${modelsPhrase(count, 'متاح')} · ${PROVIDER_LABELS[payload.provider] || 'مزوّد مخصص'}` : 'حمّل نموذجًا من المزوّد ثم أعد الاختبار';
     } else {
       result.classList.add('bad');
       result.textContent = data.error || 'تعذّر الاتصال بالخادم.';
+      const dot = $('#settings-status-dot');
+      if (dot) dot.className = 'status-dot offline';
+      const title = $('#settings-status-text');
+      if (title) title.textContent = 'تعذّر الاتصال';
     }
   } catch (err) {
     result.classList.add('bad');
@@ -247,7 +312,34 @@ function bindSettingsEvents() {
     };
     if (provider.value !== 'openai-compatible') base.value = defaults[provider.value] || '';
     updateProviderHint();
+    updateSettingsSummary();
   });
+
+  $$('.settings-tab').forEach((button) => {
+    button.addEventListener('click', () => setSettingsTab(button.dataset.settingsTab));
+  });
+
+  const keyToggle = $('#toggle-key');
+  if (keyToggle) {
+    keyToggle.addEventListener('click', () => {
+      const key = $('#set-key');
+      if (!key) return;
+      const show = key.type === 'password';
+      key.type = show ? 'text' : 'password';
+      keyToggle.classList.toggle('active', show);
+      keyToggle.title = show ? 'إخفاء المفتاح' : 'إظهار المفتاح';
+      keyToggle.setAttribute('aria-label', show ? 'إخفاء مفتاح API' : 'إظهار مفتاح API');
+    });
+  }
+
+  const openWorkspace = $('#open-workspace-from-settings');
+  if (openWorkspace) {
+    openWorkspace.addEventListener('click', () => {
+      closeSettings();
+      toggleWorkspace(true);
+    });
+  }
+
   const modeChip = $('#mode-chip');
   if (modeChip) {
     modeChip.addEventListener('click', (event) => {
@@ -318,4 +410,19 @@ function updateProviderHint() {
     'openai-compatible': 'يدعم أي خدمة توفّر واجهة OpenAI متوافقة مع /v1/models و/v1/chat/completions، مع بث واستدعاء أدوات. أدخل عنوان API ومفتاحه.'
   };
   hint.textContent = hints[provider.value] || hints['openai-compatible'];
+
+  const baseHint = $('#base-hint');
+  if (baseHint) {
+    const examples = {
+      lmstudio: 'http://127.0.0.1:1234/v1',
+      ollama: 'http://127.0.0.1:11434/v1',
+      openai: 'https://api.openai.com/v1',
+      openrouter: 'https://openrouter.ai/api/v1',
+      groq: 'https://api.groq.com/openai/v1',
+      gemini: 'https://generativelanguage.googleapis.com/v1beta/openai',
+      freellmapi: 'http://localhost:3001/v1',
+      'openai-compatible': 'https://api.example.com/v1'
+    };
+    baseHint.textContent = `مثال: ${examples[provider.value] || examples['openai-compatible']}`;
+  }
 }

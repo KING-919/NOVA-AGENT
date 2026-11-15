@@ -67,6 +67,25 @@ function escapeHtml(value) {
   }[ch]));
 }
 
+function modelsShort(count) {
+  const n = Number(count) || 0;
+  if (!n) return 'لا نماذج';
+  if (n === 1) return 'نموذج واحد';
+  if (n === 2) return 'نموذجان';
+  if (n <= 10) return `${n} نماذج`;
+  return `${n} نموذجًا`;
+}
+
+// Arabic count agreement for phrases like "3 نماذج متاحة" / "11 نموذجًا متاحًا".
+function modelsPhrase(count, adjective) {
+  const n = Number(count) || 0;
+  if (!n) return 'لا توجد نماذج';
+  if (n === 1) return `نموذج واحد ${adjective}`;
+  if (n === 2) return `نموذجان ${adjective}ان`;
+  if (n <= 10) return `${n} نماذج ${adjective}ة`;
+  return `${n} نموذجًا ${adjective}ًا`;
+}
+
 function tryParse(value) {
   if (value && typeof value === 'object') return value;
   try {
@@ -92,6 +111,18 @@ function relTime(iso) {
   if (diff < 86400) return `منذ ${Math.floor(diff / 3600)} س`;
   if (diff < 172800) return 'أمس';
   return date.toLocaleDateString('ar', { day: 'numeric', month: 'short' });
+}
+
+function sessionGroup(iso) {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return 'أقدم';
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const stamp = date.getTime();
+  if (stamp >= start) return 'اليوم';
+  if (stamp >= start - 86400000) return 'أمس';
+  if (stamp >= start - 7 * 86400000) return 'هذا الأسبوع';
+  return 'أقدم';
 }
 
 function greeting() {

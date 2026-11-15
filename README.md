@@ -1,8 +1,16 @@
 <div align="center">
-  <img src="docs/assets/nova-banner.svg" alt="NOVA Agent — a local-first AI coding workspace" width="100%" />
+  <img src="docs/assets/nova-banner.svg" alt="NOVA Agent — an Arabic-first, local-first AI coding workspace" width="100%" />
 
-  <p><strong>A local-first AI workspace for building with the models and APIs you choose.</strong></p>
-  <p><a href="#quick-start">Quick start</a> · <a href="https://king-919.github.io/NOVA-AGENT-Website/">Download</a> · <a href="#architecture">Architecture</a> · <a href="#البدء-السريع">العربية</a></p>
+  <p><strong>وكيل برمجة عربي، محلي أولًا، وينفّذ بموافقتك.</strong></p>
+  <p><strong>An Arabic-first, local-first coding agent that acts with your approval.</strong></p>
+
+  <p>
+    <a href="#ليش-nova">ليش NOVA؟</a> ·
+    <a href="#البدء-السريع">البدء السريع</a> ·
+    <a href="#why-nova">Why NOVA</a> ·
+    <a href="#quick-start">Quick start</a> ·
+    <a href="https://king-919.github.io/NOVA-AGENT-Website/">تنزيل / Download</a>
+  </p>
 
   <p>
     <a href="https://github.com/KING-919/NOVA-AGENT-Website/actions/workflows/pages.yml"><img alt="Download site" src="https://github.com/KING-919/NOVA-AGENT-Website/actions/workflows/pages.yml/badge.svg"></a>
@@ -13,25 +21,70 @@
   </p>
 </div>
 
-NOVA Agent is an Arabic-first desktop coding assistant for Windows. It brings chat, project context, file tools, and model-provider settings into one workspace. Connect a local model or an API that follows the OpenAI-compatible chat-completions format.
+NOVA Agent is a desktop coding agent for Windows that reads your project, plans with you, and asks before it changes anything. The interface is Arabic-first, the workspace stays on your machine, and you bring the model provider you already use.
 
-> NOVA is an independent project. It does not include or bundle a model or API subscription. You provide the model endpoint and, when required, its API key.
+> NOVA is an independent project. It does not include or bundle a model or an API subscription. You provide the model endpoint and, when required, its key.
+
+## ليش NOVA؟
+
+معظم أدوات البرمجة بالذكاء الاصطناعي تفترض ثلاثة أشياء: أنك تعمل بالإنجليزية، وأن مشروعك يمكن أن يُرفع إلى سحابتها، وأن الوكيل يجب أن ينفّذ أولًا ويسأل لاحقًا. NOVA مبني على العكس.
+
+- **عربي أولًا، بلا ترجمة حرفية.** واجهة RTL كاملة، أوامر عربية، ونصوص مكتوبة للمطور العربي. الإنجليزية متاحة، لكنها ليست الافتراض.
+- **محلي أولًا، بلا حساب.** يقرأ NOVA ملفات مشروعك من جهازك، ويحفظ الإعدادات والجلسات محليًا. لا نرفع مشروعك إلى خوادمنا ولا نطلب تسجيلًا.
+- **موافقة أولًا، بلا صندوق أسود.** خطة ظاهرة قبل التنفيذ، ومعاينة فرق قبل الكتابة، وطلب موافقة لكل أمر. أوقف أي خطوة وقتما تريد.
+- **مزوّدك ونموذجك، بلا احتكار.** OpenAI، OpenRouter، Gemini، Groq، Ollama، LM Studio، FreeLLMAPI، أو أي API متوافق مع OpenAI. المفاتيح تبقى في إعداداتك المحلية.
+- **مساحة عمل كاملة، لا فقاعة دردشة.** مستكشف ملفات، معاينة كود، أدوات مشروع، جلسات، قوالب جاهزة، لوحة أوامر، وتصدير Markdown — في نافذة واحدة.
+- **بنية واضحة، بلا طبقة سحابية إجبارية.** خادم Express محلي + واجهة ويب + غلاف Electron. لا خدمة خلفية إضافية بينك وبين مزوّدك، والكود متاح على GitHub للمراجعة.
+
+### الفرق باختصار
+
+| | NOVA | وكيل سحابي | إضافة داخل IDE |
+|---|---|---|---|
+| واجهة عربية أصلية وRTL | ✓ | — | — |
+| ملفات المشروع تبقى على جهازك | ✓ | — | ✓ |
+| موافقة قبل كل تعديل وأمر | ✓ | جزئي | جزئي |
+| اختيار المزوّد والنموذج | ✓ | — | جزئي |
+| نموذج محلي دون إنترنت | ✓ | — | جزئي |
+| بدون اشتراك إجباري | ✓ | — | جزئي |
+
+«جزئي» تعني أن الميزة متاحة في بعض الحالات أو تحتاج إعدادًا إضافيًا. NOVA مجاني، وتدفع فقط لمزوّد النموذج إن اخترت مزوّدًا مدفوعًا.
+
+## Why NOVA?
+
+A coding agent should not make you choose between your language, your files, and your control. NOVA is built on three defaults:
+
+- **Arabic first.** A full RTL interface, Arabic instructions, and copy written for Arabic-speaking developers — not a machine translation wrapped around an English product.
+- **Local first.** Your project is read from your own folder. Settings and sessions stay on your machine. There is no NOVA account and no project server.
+- **Approval first.** A visible plan, a diff before a write, and an approval request before a command runs. The agent proposes; you decide.
+
+Then the practical differences follow: eight provider paths, a real workspace beside the conversation, and a small local architecture you can inspect.
+
+> When you choose a hosted provider, the context the agent sends is governed by that provider's policy. Choose a local model such as Ollama or LM Studio if you want to stay offline.
+
+## لقطات من التطبيق
+
+<p align="center">
+  <img src="docs/assets/nova-dark.png" alt="NOVA Agent dark interface with an Arabic conversation, a plan, and a file approval request" width="49%" />
+  <img src="docs/assets/nova-workspace.png" alt="NOVA Agent light interface with the project explorer and a code preview beside the conversation" width="49%" />
+</p>
+<p align="center"><sub>محادثة عربية مع خطة وموافقة على ملف · مساحة العمل بجانب المحادثة. · An Arabic chat with a plan and a file approval · the workspace beside the conversation.</sub></p>
 
 ## What you can do
 
 - Stream a conversation with a selected model and keep separate sessions.
 - Ask for a plan, answer clarifying questions, and approve file edits or shell commands before they run.
 - Read and edit workspace files, search project text, and preview files read-only.
-- Choose a local or hosted model provider and configure a compatible custom endpoint.
-- Review session history, use prompt templates and the `Ctrl+Shift+P` command palette, and export Markdown.
-- Use Arabic RTL, light and dark themes, and a responsive web interface inside the Windows desktop app.
+- Choose a local or hosted provider and configure any compatible custom endpoint.
+- Review diffs, keep a full session history, use prompt templates and the `Ctrl+Shift+P` command palette, and export Markdown.
+- Work in Arabic RTL or English, with light and dark themes.
+- Run the same interface as a Windows desktop app or in the browser from source.
 
 ## Quick start
 
 ### Windows desktop
 
 1. [Download the latest NOVA installer](https://king-919.github.io/NOVA-AGENT-Website/) and install it.
-2. Open **Settings → AI provider** and choose a local model or enter your API provider, model ID, and API key.
+2. Open **Settings → AI provider** and choose a local model or enter your provider, model ID, and API key.
 3. Select a workspace, start a chat, and begin in **Ask** or **Plan** mode. Review each requested edit or command before approving it.
 
 ### Run from source
@@ -65,7 +118,7 @@ Built-in choices include LM Studio, Ollama, OpenAI, OpenRouter, Groq, Google Gem
 
 ```mermaid
 flowchart LR
-  User[User] --> UI[Arabic web UI]
+  User[User] --> UI[Arabic-first web UI]
   Desktop[Electron main process] --> Server[Local Express server]
   UI -->|HTTP and event stream| Server
   Server --> Agent[Agent loop]
@@ -87,15 +140,15 @@ npm run dist:win
 
 The installer is written to `dist/NOVA-Setup-win-x64.exe`. Pushing a version tag such as `v2.1.4` triggers the Windows build and attaches the installer to a GitHub Release. The installer is not code-signed, so Windows may show a publisher warning.
 
-## Contributing
-
-Bug reports and pull requests are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. For suspected security issues, follow [SECURITY.md](SECURITY.md) and do not post exploit details in a public issue.
-
 ## Security and privacy
 
-NOVA can read and write files and run commands inside the selected workspace. Start in **Ask** or **Plan** mode and inspect approval requests. Enabling access outside the workspace or automatic command execution broadens what the agent can do. When you use a hosted provider, prompts and the project context sent by NOVA are subject to that provider's policies.
+NOVA can read and write files and run commands inside the selected workspace. Start in **Ask** or **Plan** mode and inspect approval requests. Enabling access outside the workspace or automatic command execution broadens what the agent can do. When you use a hosted provider, prompts and the project context sent by NOVA are subject to that provider's policies. NOVA does not operate a project server or require an account.
 
-Official website: [nova-agent1.netlify.app](https://nova-agent1.netlify.app) · [GitHub Pages downloads](https://king-919.github.io/NOVA-AGENT-Website/) · [Website source repository](https://github.com/KING-919/NOVA-AGENT-Website).
+For suspected security issues, follow [SECURITY.md](SECURITY.md) and do not post exploit details in a public issue.
+
+## Contributing
+
+Bug reports and pull requests are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
 
 ## License
 
@@ -107,7 +160,7 @@ No license has been selected yet. The repository is publicly viewable, but publi
 
 ### تطبيق Windows
 
-1. [نزّل أحدث إصدار من NOVA](https://king-919.github.io/NOVA-AGENT/) وثبّته.
+1. [نزّل أحدث إصدار من NOVA](https://king-919.github.io/NOVA-AGENT-Website/) وثبّته.
 2. افتح **الإعدادات ← مزوّد الذكاء الاصطناعي**، ثم اختر نموذجًا محليًا أو أدخل عنوان API ومعرّف النموذج والمفتاح عند الحاجة.
 3. اختر مساحة العمل وابدأ بوضع **اسأل** أو **خطّط**. راجع طلبات تعديل الملفات وتشغيل الأوامر قبل الموافقة.
 

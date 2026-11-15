@@ -15,7 +15,7 @@ function fillComposerPrompt(prompt) {
 const QUICK_ACTIONS = [
   { title: 'محادثة جديدة', detail: 'ابدأ جلسة مستقلة', icon: ICONS.plus, keys: 'Ctrl K', run: () => newChat() },
   { title: 'البحث في المحادثات', detail: 'اعثر على جلسة سابقة', icon: ICONS.search, keys: '/', run: () => $('#session-search').focus() },
-  { title: 'اختيار النموذج', detail: 'نماذج LM Studio المحلية', icon: ICONS.brain, keys: 'Ctrl ⇧ K', run: () => openModelPopover() },
+  { title: 'اختيار النموذج', detail: 'من مزوّدك المحلي أو السحابي', icon: ICONS.brain, keys: 'Ctrl ⇧ K', run: () => openModelPopover() },
   { title: 'مستكشف الملفات', detail: 'تصفح ملفات مساحة العمل', icon: ICONS.folder, keys: '', run: () => toggleWorkspace(true) },
   { title: 'مراجعة المشروع', detail: 'فحص الجودة والمخاطر قبل التعديل', icon: ICONS.code, keys: '', run: () => fillComposerPrompt('راجع المشروع كاملًا كمراجع برمجي خبير. افحص بنية الملفات، الأخطاء المحتملة، الأمان، الأداء، وإمكانية الوصول. لا تعدّل الملفات. اعرض الملاحظات مرتبة حسب الخطورة مع اسم الملف والسبب والحل المقترح.') },
   { title: 'خطة تنفيذ ميزة', detail: 'تقسيم العمل إلى مراحل واضحة', icon: ICONS.list, keys: '', run: () => fillComposerPrompt('حلّل طلبي ثم ضع خطة تنفيذ عملية على مراحل. اذكر الملفات التي ستتأثر، المخاطر والاعتماديات، وكيف ستتحقق من النتيجة. اسألني فقط إذا كان هناك قرار يمنعك من بدء العمل.') },
